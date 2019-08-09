@@ -39,6 +39,10 @@ namespace hungarian_solver
         {
             return obj_.getInitialCostMatrix(cost_matrix);
         }
+        std::vector<bool> getNonZeroColFlags(Eigen::MatrixXd mat)
+        {
+            return obj_.getNonZeroColFlags(mat);
+        }
     };
 
     TEST(SolverTestSuite, getInitialCostMatrixTestCase1)
@@ -98,6 +102,47 @@ namespace hungarian_solver
 
     TEST(SolverTestSuite, getInitialCostMatrixTestCase2)
     {
+        Eigen::MatrixXd cost_matrix(4,4);
+        cost_matrix << 
+                  0,       0,       3, DBL_MAX,
+                  0,       1, DBL_MAX,       2,
+                  3, DBL_MAX,       0,       0,
+            DBL_MAX,       3,       0,       0;
+        hungarian_solver::Solver solver;
+        Eigen::MatrixXd ret = solver.getInitialCostMatrix(cost_matrix);
+        EXPECT_FLOAT_EQ(ret(0,0),1);
+        EXPECT_FLOAT_EQ(ret(0,1),0);
+        EXPECT_FLOAT_EQ(ret(0,2),0);
+        EXPECT_FLOAT_EQ(ret(0,3),0);
+
+        EXPECT_FLOAT_EQ(ret(1,0),0);
+        EXPECT_FLOAT_EQ(ret(1,1),0);
+        EXPECT_FLOAT_EQ(ret(1,2),0);
+        EXPECT_FLOAT_EQ(ret(1,3),0);
+
+        EXPECT_FLOAT_EQ(ret(2,0),0);
+        EXPECT_FLOAT_EQ(ret(2,1),0);
+        EXPECT_FLOAT_EQ(ret(2,2),1);
+        EXPECT_FLOAT_EQ(ret(2,3),0);
+
+        EXPECT_FLOAT_EQ(ret(3,0),0);
+        EXPECT_FLOAT_EQ(ret(3,1),0);
+        EXPECT_FLOAT_EQ(ret(3,2),0);
+        EXPECT_FLOAT_EQ(ret(3,3),1);
+    }
+
+    TEST(SolverTestSuite, getNonZeroColFlagsTestCase1)
+    {
+        Eigen::MatrixXd cost_matrix(3,3);
+        cost_matrix <<
+            0, 0, 3,
+            0, 0, 3,
+            0, 0, 3;
+        hungarian_solver::Solver solver;
+        std::vector<bool> flags = solver.getNonZeroColFlags(cost_matrix);
+        EXPECT_EQ(flags[0],false);
+        EXPECT_EQ(flags[1],false);
+        EXPECT_EQ(flags[2],true);
     }
 }
 

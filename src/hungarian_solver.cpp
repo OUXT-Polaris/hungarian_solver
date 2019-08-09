@@ -12,6 +12,28 @@ namespace hungarian_solver
 
     }
 
+    std::vector<bool> Solver::getNonZeroColFlags(Eigen::MatrixXd mat)
+    {
+        std::vector<bool> flags(mat.cols());
+        for(auto itr = flags.begin(); itr != flags.end(); itr++)
+        {
+            *itr = false;
+        }
+        for(int j=0; j<mat.cols(); j++)
+        {
+            for(int i=0;i<mat.rows(); i++)
+            {
+                double a = mat(i,j);
+                double b = 0.0;
+                if (fabs(a - b) > DBL_EPSILON * fmax(1, fmax(fabs(a), fabs(b))))
+                {
+                    flags[j] = true;
+                }
+            }
+        }
+        return flags;
+    }
+
     Eigen::MatrixXd Solver::getInitialCostMatrix(Eigen::MatrixXd cost_matrix)
     {
         std::vector<std::pair<int,int> > zero_index;

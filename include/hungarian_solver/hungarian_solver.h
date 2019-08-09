@@ -22,9 +22,13 @@ namespace hungarian_solver
         void solve(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment);
         void test(double t);
     private:
+        std::vector<bool> getNonZeroColFlags(Eigen::MatrixXd mat);
         Eigen::MatrixXd getInitialCostMatrix(Eigen::MatrixXd cost_matrix);
+        // macros for Rostest
         friend class SolverTestSuite;
         FRIEND_TEST(SolverTestSuite, getInitialCostMatrixTestCase1);
+        FRIEND_TEST(SolverTestSuite, getInitialCostMatrixTestCase2);
+        FRIEND_TEST(SolverTestSuite, getNonZeroColFlagsTestCase1);
     };
     void test(){}
 }
