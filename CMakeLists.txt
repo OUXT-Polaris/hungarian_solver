@@ -27,6 +27,7 @@ add_library(
   hungarian_solver
   src/hungarian_solver.cpp
 )
+target_link_libraries(hungarian_solver ${catkin_LIBRARIES})
 
 # install executables/libs
 install(TARGETS hungarian_solver
@@ -42,10 +43,24 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 if (CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
+  find_package(code_coverage REQUIRED)
+  if(ENABLE_COVERAGE_TESTING)
+    include(CodeCoverage)
+    APPEND_COVERAGE_COMPILER_FLAGS()
+  endif()
+
   add_rostest_gtest(test-hungarian_solver
   test/test_hungarian_solver.test
   test/src/test_hungarian_solver.cpp)
   target_link_libraries(test-hungarian_solver
   ${catkin_LIBRARIES}
   hungarian_solver)
+
+  if(ENABLE_COVERAGE_TESTING)
+    set(COVERAGE_EXCLUDES "*/hungarian_solver/test*" "*/hungarian_solver/coverage")
+    add_code_coverage(
+      NAME hungarian_solver_coverage
+      DEPENDS tests
+    )
+  endif()
 endif ()

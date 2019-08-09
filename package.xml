@@ -12,12 +12,15 @@
   <build_depend>eigen</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rostest</build_depend>
+  <build_depend>code_coverage</build_depend>
   <build_export_depend>eigen</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rostest</build_export_depend>
+  <build_export_depend>code_coverage</build_export_depend>
   <exec_depend>eigen</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rostest</exec_depend>
+  <exec_depend>code_coverage</exec_depend>
 
   <export>
   </export>

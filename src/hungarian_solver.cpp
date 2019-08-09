@@ -12,7 +12,7 @@ namespace hungarian_solver
 
     }
 
-    Eigen::MatrixXd getInitialCostMatrix(Eigen::MatrixXd cost_matrix)
+    Eigen::MatrixXd Solver::getInitialCostMatrix(Eigen::MatrixXd cost_matrix)
     {
         std::vector<std::pair<int,int> > zero_index;
         for(int i=0; i<cost_matrix.rows(); i++)
@@ -27,11 +27,11 @@ namespace hungarian_solver
                 }
             }
         }
-        int size = cost_matrix.rows() + cost_matrix.cols();
+        int size = cost_matrix.rows();
         std::vector<bool> row_flags = std::vector<bool>(size);
         std::vector<bool> col_flags = std::vector<bool>(size);
         Eigen::MatrixXd ret = Eigen::MatrixXd::Zero(size, size);
-        for(int i=0; i<size; i++)
+        for(int i=0; i<zero_index.size(); i++)
         {
             if(row_flags[zero_index[i].first] == false && col_flags[zero_index[i].second] == false)
             {

@@ -20,10 +20,11 @@ namespace hungarian_solver
         ~Solver();
         void solve(Eigen::MatrixXd cost_matrix);
         void solve(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment);
+        void test(double t);
     private:
         Eigen::MatrixXd getInitialCostMatrix(Eigen::MatrixXd cost_matrix);
         friend class SolverTestSuite;
         FRIEND_TEST(SolverTestSuite, getInitialCostMatrixTestCase1);
     };
-
+    void test(){}
 }
