@@ -43,6 +43,10 @@ namespace hungarian_solver
         {
             return obj_.getNonZeroColFlags(mat);
         }
+        Eigen::MatrixXd getPaddCostMatrix(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment)
+        {
+            return obj_.getPaddCostMatrix(cost_matrix,cost_of_non_assignment);
+        }
     };
 
     TEST(SolverTestSuite, getInitialCostMatrixTestCase1)
@@ -143,6 +147,49 @@ namespace hungarian_solver
         EXPECT_EQ(flags[0],false);
         EXPECT_EQ(flags[1],false);
         EXPECT_EQ(flags[2],true);
+    }
+
+    TEST(SolverTestSuite, getNonZeroColFlagsTestCase2)
+    {
+        Eigen::MatrixXd cost_matrix(3,3);
+        cost_matrix <<
+            3, 0, 3,
+            0, 0, 3,
+            0, 0, 3;
+        hungarian_solver::Solver solver;
+        std::vector<bool> flags = solver.getNonZeroColFlags(cost_matrix);
+        EXPECT_EQ(flags[0],true);
+        EXPECT_EQ(flags[1],false);
+        EXPECT_EQ(flags[2],true);
+    }
+
+    TEST(SolverTestSuite, getPaddCostMatrixTestCase1)
+    {
+        Eigen::MatrixXd cost_matrix(2,2);
+        cost_matrix <<
+            0, 0,
+            1, 2;
+        hungarian_solver::Solver solver;
+        Eigen::MatrixXd padded_cost_mat = solver.getPaddCostMatrix(cost_matrix,3);
+        EXPECT_FLOAT_EQ(padded_cost_mat(0,0),0);
+        EXPECT_FLOAT_EQ(padded_cost_mat(0,1),0);
+        EXPECT_FLOAT_EQ(padded_cost_mat(0,2),3);
+        EXPECT_FLOAT_EQ(padded_cost_mat(0,3),DBL_MAX);
+
+        EXPECT_FLOAT_EQ(padded_cost_mat(1,0),1);
+        EXPECT_FLOAT_EQ(padded_cost_mat(1,1),2);
+        EXPECT_FLOAT_EQ(padded_cost_mat(1,2),DBL_MAX);
+        EXPECT_FLOAT_EQ(padded_cost_mat(1,3),3);
+
+        EXPECT_FLOAT_EQ(padded_cost_mat(2,0),3);
+        EXPECT_FLOAT_EQ(padded_cost_mat(2,1),DBL_MAX);
+        EXPECT_FLOAT_EQ(padded_cost_mat(2,2),0);
+        EXPECT_FLOAT_EQ(padded_cost_mat(2,3),0);
+
+        EXPECT_FLOAT_EQ(padded_cost_mat(3,0),DBL_MAX);
+        EXPECT_FLOAT_EQ(padded_cost_mat(3,1),3);
+        EXPECT_FLOAT_EQ(padded_cost_mat(3,2),0);
+        EXPECT_FLOAT_EQ(padded_cost_mat(3,3),0);
     }
 }
 

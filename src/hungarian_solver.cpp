@@ -72,7 +72,26 @@ namespace hungarian_solver
 
     void Solver::solve(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment)
     {
+        return;
+    }
+
+    Eigen::MatrixXd Solver::getPaddCostMatrix(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment)
+    {
         int size = cost_matrix.rows() + cost_matrix.cols();
-        Eigen::MatrixXd padded_cost_mat = Eigen::MatrixXd::Zero(size, size);
+        Eigen::MatrixXd padded_cost_mat = Eigen::MatrixXd::Ones(size, size);
+        double max_val = DBL_MAX;
+        padded_cost_mat = padded_cost_mat*max_val;
+        padded_cost_mat.block(0,0,cost_matrix.rows(),cost_matrix.cols()) = cost_matrix;
+        for(int i=0; i<cost_matrix.rows(); i++)
+        {
+            padded_cost_mat(i,i+cost_matrix.cols()) = cost_of_non_assignment;
+        }
+        for(int i=0; i<cost_matrix.cols(); i++)
+        {
+            padded_cost_mat(i+cost_matrix.rows(),i) = cost_of_non_assignment;
+        }
+        padded_cost_mat.block(cost_matrix.rows(),cost_matrix.cols(),cost_matrix.rows(),cost_matrix.cols()) 
+            = Eigen::MatrixXd::Zero(cost_matrix.rows(),cost_matrix.cols());
+        return padded_cost_mat;
     }
 }
