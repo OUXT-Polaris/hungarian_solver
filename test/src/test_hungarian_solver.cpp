@@ -51,6 +51,10 @@ namespace hungarian_solver
         {
             return obj_.subtractRawMinima(mat);
         }
+        Eigen::MatrixXd subtractColMinima(Eigen::MatrixXd mat)
+        {
+            return obj_.subtractColMinima(mat);
+        }
     };
 
     TEST(SolverTestSuite, getInitialCostMatrixTestCase1)
@@ -210,6 +214,32 @@ namespace hungarian_solver
         EXPECT_FLOAT_EQ(ret(0,1),2);
         EXPECT_FLOAT_EQ(ret(1,0),0);
         EXPECT_FLOAT_EQ(ret(1,1),1);
+    }
+
+    TEST(SolverTestSuite, subtractColMinimaTestCase1)
+    {
+        Eigen::MatrixXd cost_matrix(2,3);
+        cost_matrix <<
+            0, 1, 2,
+            1, 2, 2;
+        hungarian_solver::Solver solver;
+        Eigen::MatrixXd ret = solver.subtractColMinima(cost_matrix);
+        EXPECT_FLOAT_EQ(ret(0,0),0);
+        EXPECT_FLOAT_EQ(ret(0,1),0);
+        EXPECT_FLOAT_EQ(ret(0,2),0);
+        EXPECT_FLOAT_EQ(ret(1,0),1);
+        EXPECT_FLOAT_EQ(ret(1,1),1);
+        EXPECT_FLOAT_EQ(ret(1,2),0);
+    }
+
+    TEST(SolverTestSuite, solveTestCase1)
+    {
+        Eigen::MatrixXd cost_matrix(2,2);
+        cost_matrix <<
+            0, 2,
+            1, 2;
+        hungarian_solver::Solver solver;
+        solver.solve(cost_matrix,3);
     }
 }
 

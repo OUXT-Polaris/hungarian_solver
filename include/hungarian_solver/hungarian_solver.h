@@ -20,8 +20,8 @@ namespace hungarian_solver
         ~Solver();
         void solve(Eigen::MatrixXd cost_matrix);
         void solve(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment);
-        void test(double t);
     private:
+        Eigen::MatrixXd subtractColMinima(Eigen::MatrixXd mat);
         Eigen::MatrixXd subtractRawMinima(Eigen::MatrixXd mat);
         std::vector<bool> getNonZeroColFlags(Eigen::MatrixXd mat);
         Eigen::MatrixXd getInitialCostMatrix(Eigen::MatrixXd cost_matrix);
@@ -34,6 +34,7 @@ namespace hungarian_solver
         FRIEND_TEST(SolverTestSuite, getNonZeroColFlagsTestCase2);
         FRIEND_TEST(SolverTestSuite, getPaddCostMatrixTestCase1);
         FRIEND_TEST(SolverTestSuite, subtractRawMinimaTestCase1);
+        FRIEND_TEST(SolverTestSuite, subtractColMinimaTestCase1);
     };
     void test(){}
 }

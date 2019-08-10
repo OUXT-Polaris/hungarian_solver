@@ -70,6 +70,8 @@ namespace hungarian_solver
         ROS_ASSERT(cost_matrix.rows() == cost_matrix.cols());
         cost_matrix = subtractRawMinima(cost_matrix);
         Eigen::MatrixXd initial_cost_mat = getInitialCostMatrix(cost_matrix);
+        std::vector<bool> non_zero_col_flags = getNonZeroColFlags(initial_cost_mat);
+        //ROS_ERROR_STREAM(initial_cost_mat);
         return;
     }
 
@@ -91,6 +93,21 @@ namespace hungarian_solver
                 block(0,m) = block(0,m) - min_value;
             }
             mat.block(i,0,1,mat.cols()) = block;
+        }
+        return mat;
+    }
+
+    Eigen::MatrixXd Solver::subtractColMinima(Eigen::MatrixXd mat)
+    {
+        for(int i=0; i<mat.cols(); i++)
+        {
+            Eigen::MatrixXd block = mat.block(0,i,mat.rows(),1);
+            double min_value = block.minCoeff();
+            for(int m=0; m<mat.rows(); m++)
+            {
+                block(m,0) = block(m,0) - min_value;
+            }
+            mat.block(0,i,mat.rows(),1) = block;
         }
         return mat;
     }
