@@ -68,11 +68,31 @@ namespace hungarian_solver
     void Solver::solve(Eigen::MatrixXd cost_matrix)
     {
         ROS_ASSERT(cost_matrix.rows() == cost_matrix.cols());
+        cost_matrix = subtractRawMinima(cost_matrix);
+        Eigen::MatrixXd initial_cost_mat = getInitialCostMatrix(cost_matrix);
+        return;
     }
 
     void Solver::solve(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment)
     {
+        Eigen::MatrixXd padded_cost_mat = getPaddCostMatrix(cost_matrix,cost_of_non_assignment);
+        solve(padded_cost_mat);
         return;
+    }
+
+    Eigen::MatrixXd Solver::subtractRawMinima(Eigen::MatrixXd mat)
+    {
+        for(int i=0; i<mat.rows(); i++)
+        {
+            Eigen::MatrixXd block = mat.block(i,0,1,mat.cols());
+            double min_value = block.minCoeff();
+            for(int m=0; m<mat.cols(); m++)
+            {
+                block(0,m) = block(0,m) - min_value;
+            }
+            mat.block(i,0,1,mat.cols()) = block;
+        }
+        return mat;
     }
 
     Eigen::MatrixXd Solver::getPaddCostMatrix(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment)

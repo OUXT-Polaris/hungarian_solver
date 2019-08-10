@@ -47,6 +47,10 @@ namespace hungarian_solver
         {
             return obj_.getPaddCostMatrix(cost_matrix,cost_of_non_assignment);
         }
+        Eigen::MatrixXd subtractRawMinima(Eigen::MatrixXd mat)
+        {
+            return obj_.subtractRawMinima(mat);
+        }
     };
 
     TEST(SolverTestSuite, getInitialCostMatrixTestCase1)
@@ -171,6 +175,8 @@ namespace hungarian_solver
             1, 2;
         hungarian_solver::Solver solver;
         Eigen::MatrixXd padded_cost_mat = solver.getPaddCostMatrix(cost_matrix,3);
+        EXPECT_EQ(padded_cost_mat.rows(),padded_cost_mat.cols());
+
         EXPECT_FLOAT_EQ(padded_cost_mat(0,0),0);
         EXPECT_FLOAT_EQ(padded_cost_mat(0,1),0);
         EXPECT_FLOAT_EQ(padded_cost_mat(0,2),3);
@@ -190,6 +196,20 @@ namespace hungarian_solver
         EXPECT_FLOAT_EQ(padded_cost_mat(3,1),3);
         EXPECT_FLOAT_EQ(padded_cost_mat(3,2),0);
         EXPECT_FLOAT_EQ(padded_cost_mat(3,3),0);
+    }
+
+    TEST(SolverTestSuite, subtractRawMinimaTestCase1)
+    {
+        Eigen::MatrixXd cost_matrix(2,2);
+        cost_matrix <<
+            0, 2,
+            1, 2;
+        hungarian_solver::Solver solver;
+        Eigen::MatrixXd ret = solver.subtractRawMinima(cost_matrix);
+        EXPECT_FLOAT_EQ(ret(0,0),0);
+        EXPECT_FLOAT_EQ(ret(0,1),2);
+        EXPECT_FLOAT_EQ(ret(1,0),0);
+        EXPECT_FLOAT_EQ(ret(1,1),1);
     }
 }
 
