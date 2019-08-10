@@ -55,6 +55,14 @@ namespace hungarian_solver
         {
             return obj_.subtractColMinima(mat);
         }
+        std::vector<std::vector<std::pair<int,int> > > getAssignment(Eigen::MatrixXd mat)
+        {
+            return obj_.getAssignment(mat);
+        }
+        std::vector<std::pair<int,int> > getZeroIndex(Eigen::MatrixXd mat)
+        {
+            return obj_.getZeroIndex(mat);
+        }
     };
 
     TEST(SolverTestSuite, getInitialCostMatrixTestCase1)
@@ -241,12 +249,50 @@ namespace hungarian_solver
         hungarian_solver::Solver solver;
         solver.solve(cost_matrix,3);
     }
+
+    TEST(SolverTestSuite, getAssignmentTestCase1)
+    {
+        Eigen::MatrixXd mat(2,2);
+        mat <<
+            0, 2,
+            1, 2;
+        hungarian_solver::Solver solver;
+        std::vector<std::vector<std::pair<int,int> > > ret = solver.getAssignment(mat);
+        EXPECT_EQ(ret.size(),0);
+    }
+
+    TEST(SolverTestSuite, getZeroIndexTestCase1)
+    {
+        Eigen::MatrixXd mat(2,2);
+        mat <<
+            0, 2,
+            1, 2;
+        hungarian_solver::Solver solver;
+        std::vector<std::pair<int,int> > ret = solver.getZeroIndex(mat);
+        EXPECT_EQ(ret.size(),1);
+        EXPECT_EQ(ret[0].first,0);
+        EXPECT_EQ(ret[0].second,0);
+    }
+
+    TEST(SolverTestSuite, getZeroIndexTestCase2)
+    {
+        Eigen::MatrixXd mat(2,2);
+        mat <<
+            0, 2,
+            1, 0;
+        hungarian_solver::Solver solver;
+        std::vector<std::pair<int,int> > ret = solver.getZeroIndex(mat);
+        EXPECT_EQ(ret.size(),2);
+        EXPECT_EQ(ret[0].first,0);
+        EXPECT_EQ(ret[0].second,0);
+        EXPECT_EQ(ret[1].first,1);
+        EXPECT_EQ(ret[1].second,1);
+    }
 }
 
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv)
 {
-    hungarian_solver::test();
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

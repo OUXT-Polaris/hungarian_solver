@@ -69,10 +69,38 @@ namespace hungarian_solver
     {
         ROS_ASSERT(cost_matrix.rows() == cost_matrix.cols());
         cost_matrix = subtractRawMinima(cost_matrix);
-        Eigen::MatrixXd initial_cost_mat = getInitialCostMatrix(cost_matrix);
-        std::vector<bool> non_zero_col_flags = getNonZeroColFlags(initial_cost_mat);
+        cost_matrix = subtractColMinima(cost_matrix);
+        getAssignment(cost_matrix);
+        //ROS_ERROR_STREAM(cost_matrix);
+        //Eigen::MatrixXd initial_cost_mat = getInitialCostMatrix(cost_matrix);
+        //std::vector<bool> non_zero_col_flags = getNonZeroColFlags(initial_cost_mat);
         //ROS_ERROR_STREAM(initial_cost_mat);
         return;
+    }
+
+    std::vector<std::pair<int,int> > Solver::getZeroIndex(Eigen::MatrixXd mat)
+    {
+        std::vector<std::pair<int,int> > ret;
+        for(int i=0; i<mat.rows(); i++)
+        {
+            for(int m=0; m<mat.cols(); m++)
+            {
+                double a = mat(i,m);
+                double b = 0.0;
+                if (fabs(a - b) <= DBL_EPSILON * fmax(1, fmax(fabs(a), fabs(b))))
+                {
+                    std::pair<int,int> pair = std::make_pair(i,m);
+                    ret.push_back(pair);
+                }
+            }
+        }
+        return ret;
+    }
+
+    std::vector<std::vector<std::pair<int,int> > > Solver::getAssignment(Eigen::MatrixXd mat)
+    {
+        std::vector<std::vector<std::pair<int,int> > > ret;
+        return ret;
     }
 
     void Solver::solve(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment)

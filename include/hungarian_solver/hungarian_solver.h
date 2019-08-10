@@ -8,7 +8,7 @@
 // Headers in STL
 #include <float.h>
 
-//headers in Google Test
+// Headers in Google Test
 #include <gtest/gtest.h>
 
 namespace hungarian_solver
@@ -26,6 +26,8 @@ namespace hungarian_solver
         std::vector<bool> getNonZeroColFlags(Eigen::MatrixXd mat);
         Eigen::MatrixXd getInitialCostMatrix(Eigen::MatrixXd cost_matrix);
         Eigen::MatrixXd getPaddCostMatrix(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment);
+        std::vector<std::vector<std::pair<int,int> > > getAssignment(Eigen::MatrixXd cost_matrix);
+        std::vector<std::pair<int,int> > getZeroIndex(Eigen::MatrixXd mat);
         // macros for Rostest
         friend class SolverTestSuite;
         FRIEND_TEST(SolverTestSuite, getInitialCostMatrixTestCase1);
@@ -35,6 +37,8 @@ namespace hungarian_solver
         FRIEND_TEST(SolverTestSuite, getPaddCostMatrixTestCase1);
         FRIEND_TEST(SolverTestSuite, subtractRawMinimaTestCase1);
         FRIEND_TEST(SolverTestSuite, subtractColMinimaTestCase1);
+        FRIEND_TEST(SolverTestSuite, getAssignmentTestCase1);
+        FRIEND_TEST(SolverTestSuite, getZeroIndexTestCase1);
+        FRIEND_TEST(SolverTestSuite, getZeroIndexTestCase2);
     };
-    void test(){}
 }
