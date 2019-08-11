@@ -68,7 +68,7 @@ namespace hungarian_solver
     void Solver::solve(Eigen::MatrixXd cost_matrix)
     {
         ROS_ASSERT(cost_matrix.rows() == cost_matrix.cols());
-        cost_matrix = subtractRawMinima(cost_matrix);
+        cost_matrix = subtractRowMinima(cost_matrix);
         cost_matrix = subtractColMinima(cost_matrix);
         boost::optional<std::vector<std::pair<int,int> > > assignment = getAssignment(cost_matrix);
         return;
@@ -124,7 +124,7 @@ namespace hungarian_solver
         return;
     }
 
-    Eigen::MatrixXd Solver::subtractRawMinima(Eigen::MatrixXd mat)
+    Eigen::MatrixXd Solver::subtractRowMinima(Eigen::MatrixXd mat)
     {
         for(int i=0; i<mat.rows(); i++)
         {

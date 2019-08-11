@@ -12,6 +12,10 @@
 
 namespace hungarian_solver
 {
+    /**
+     * @brief Test Suite for Hungarian Solver Class
+     * 
+     */
     class SolverTestSuite : public ::testing::Test
     {
     protected:
@@ -47,9 +51,9 @@ namespace hungarian_solver
         {
             return obj_.getPaddCostMatrix(cost_matrix,cost_of_non_assignment);
         }
-        Eigen::MatrixXd subtractRawMinima(Eigen::MatrixXd mat)
+        Eigen::MatrixXd subtractRowMinima(Eigen::MatrixXd mat)
         {
-            return obj_.subtractRawMinima(mat);
+            return obj_.subtractRowMinima(mat);
         }
         Eigen::MatrixXd subtractColMinima(Eigen::MatrixXd mat)
         {
@@ -210,14 +214,14 @@ namespace hungarian_solver
         EXPECT_FLOAT_EQ(padded_cost_mat(3,3),0);
     }
 
-    TEST(SolverTestSuite, subtractRawMinimaTestCase1)
+    TEST(SolverTestSuite, subtractRowMinimaTestCase1)
     {
         Eigen::MatrixXd cost_matrix(2,2);
         cost_matrix <<
             0, 2,
             1, 2;
         hungarian_solver::Solver solver;
-        Eigen::MatrixXd ret = solver.subtractRawMinima(cost_matrix);
+        Eigen::MatrixXd ret = solver.subtractRowMinima(cost_matrix);
         EXPECT_FLOAT_EQ(ret(0,0),0);
         EXPECT_FLOAT_EQ(ret(0,1),2);
         EXPECT_FLOAT_EQ(ret(1,0),0);
