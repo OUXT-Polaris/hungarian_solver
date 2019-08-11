@@ -21,7 +21,9 @@
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rostest</exec_depend>
   <exec_depend>code_coverage</exec_depend>
+  <exec_depend>rosdoc_lite</exec_depend>
 
   <export>
+    <rosdoc config="rosdoc.yaml" />
   </export>
 </package>
