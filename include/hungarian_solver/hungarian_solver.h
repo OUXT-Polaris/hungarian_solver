@@ -11,6 +11,9 @@
 // Headers in Google Test
 #include <gtest/gtest.h>
 
+// Headers in Boost
+#include <boost/optional.hpp>
+
 namespace hungarian_solver
 {
     class Solver
@@ -26,7 +29,7 @@ namespace hungarian_solver
         std::vector<bool> getNonZeroColFlags(Eigen::MatrixXd mat);
         Eigen::MatrixXd getInitialCostMatrix(Eigen::MatrixXd cost_matrix);
         Eigen::MatrixXd getPaddCostMatrix(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment);
-        std::vector<std::vector<std::pair<int,int> > > getAssignment(Eigen::MatrixXd cost_matrix);
+        boost::optional<std::vector<std::pair<int,int> > > getAssignment(Eigen::MatrixXd cost_matrix);
         std::vector<std::pair<int,int> > getZeroIndex(Eigen::MatrixXd mat);
         // macros for Rostest
         friend class SolverTestSuite;

@@ -55,7 +55,7 @@ namespace hungarian_solver
         {
             return obj_.subtractColMinima(mat);
         }
-        std::vector<std::vector<std::pair<int,int> > > getAssignment(Eigen::MatrixXd mat)
+        boost::optional<std::vector<std::pair<int,int> > > getAssignment(Eigen::MatrixXd mat)
         {
             return obj_.getAssignment(mat);
         }
@@ -252,13 +252,23 @@ namespace hungarian_solver
 
     TEST(SolverTestSuite, getAssignmentTestCase1)
     {
-        Eigen::MatrixXd mat(2,2);
+        Eigen::MatrixXd mat(4,4);
         mat <<
-            0, 2,
-            1, 2;
+            0, 0, 5, 3,
+            2, 4, 2, 0,
+            3, 7, 0, 2,
+            0, 0, 0, 0;
         hungarian_solver::Solver solver;
-        std::vector<std::vector<std::pair<int,int> > > ret = solver.getAssignment(mat);
-        EXPECT_EQ(ret.size(),0);
+        boost::optional<std::vector<std::pair<int,int> > > ret = solver.getAssignment(mat);
+        EXPECT_EQ(ret->size(),4);
+        EXPECT_EQ(ret.get()[0].first,0);
+        EXPECT_EQ(ret.get()[0].second,0);
+        EXPECT_EQ(ret.get()[1].first,1);
+        EXPECT_EQ(ret.get()[1].second,3);
+        EXPECT_EQ(ret.get()[2].first,2);
+        EXPECT_EQ(ret.get()[2].second,2);
+        EXPECT_EQ(ret.get()[3].first,3);
+        EXPECT_EQ(ret.get()[3].second,1);
     }
 
     TEST(SolverTestSuite, getZeroIndexTestCase1)
@@ -279,14 +289,16 @@ namespace hungarian_solver
         Eigen::MatrixXd mat(2,2);
         mat <<
             0, 2,
-            1, 0;
+            0, 0;
         hungarian_solver::Solver solver;
         std::vector<std::pair<int,int> > ret = solver.getZeroIndex(mat);
-        EXPECT_EQ(ret.size(),2);
+        EXPECT_EQ(ret.size(),3);
         EXPECT_EQ(ret[0].first,0);
         EXPECT_EQ(ret[0].second,0);
         EXPECT_EQ(ret[1].first,1);
-        EXPECT_EQ(ret[1].second,1);
+        EXPECT_EQ(ret[1].second,0);
+        EXPECT_EQ(ret[2].first,1);
+        EXPECT_EQ(ret[2].second,1);
     }
 }
 
