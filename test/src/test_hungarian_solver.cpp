@@ -271,6 +271,19 @@ namespace hungarian_solver
         EXPECT_EQ(ret.get()[3].second,1);
     }
 
+    TEST(SolverTestSuite, getAssignmentTestCase2)
+    {
+        Eigen::MatrixXd mat(4,4);
+        mat <<
+            0, 0, 3, 2,
+            3, 5, 1, 0,
+            5, 9, 0, 3,
+            2, 2, 0, 1;
+        hungarian_solver::Solver solver;
+        boost::optional<std::vector<std::pair<int,int> > > ret = solver.getAssignment(mat);
+        EXPECT_EQ(ret,boost::none);
+    }
+
     TEST(SolverTestSuite, getZeroIndexTestCase1)
     {
         Eigen::MatrixXd mat(2,2);

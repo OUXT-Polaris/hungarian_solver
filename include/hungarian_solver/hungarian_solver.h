@@ -41,6 +41,7 @@ namespace hungarian_solver
         FRIEND_TEST(SolverTestSuite, subtractRawMinimaTestCase1);
         FRIEND_TEST(SolverTestSuite, subtractColMinimaTestCase1);
         FRIEND_TEST(SolverTestSuite, getAssignmentTestCase1);
+        FRIEND_TEST(SolverTestSuite, getAssignmentTestCase2);
         FRIEND_TEST(SolverTestSuite, getZeroIndexTestCase1);
         FRIEND_TEST(SolverTestSuite, getZeroIndexTestCase2);
     };
