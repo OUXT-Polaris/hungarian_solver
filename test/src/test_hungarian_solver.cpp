@@ -67,6 +67,10 @@ namespace hungarian_solver
         {
             return obj_.getZeroIndex(mat);
         }
+        std::pair<std::vector<int>,std::vector<int> > getDeleteLinesIndex(Eigen::MatrixXd mat)
+        {
+            return obj_.getDeleteLinesIndex(mat);
+        }
     };
 
     TEST(SolverTestSuite, getInitialCostMatrixTestCase1)
@@ -316,6 +320,21 @@ namespace hungarian_solver
         EXPECT_EQ(ret[1].second,0);
         EXPECT_EQ(ret[2].first,1);
         EXPECT_EQ(ret[2].second,1);
+    }
+
+    TEST(SolverTestSuite, getDeleteLinesIndexTestCase1)
+    {
+        Eigen::MatrixXd mat(4,4);
+        mat <<
+            0, 0, 4, 2,
+            3, 5, 2, 0,
+            4, 8, 0, 2,
+            1, 1, 0, 0;
+        hungarian_solver::Solver solver;
+        std::pair<std::vector<int>,std::vector<int> > ret = solver.getDeleteLinesIndex(mat);
+        EXPECT_EQ(ret.first[0],0);
+        EXPECT_EQ(ret.second[0],2);
+        EXPECT_EQ(ret.second[1],3);
     }
 }
 

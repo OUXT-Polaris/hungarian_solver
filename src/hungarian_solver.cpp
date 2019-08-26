@@ -71,7 +71,64 @@ namespace hungarian_solver
         cost_matrix = subtractRowMinima(cost_matrix);
         cost_matrix = subtractColMinima(cost_matrix);
         boost::optional<std::vector<std::pair<int,int> > > assignment = getAssignment(cost_matrix);
+        if(!assignment)
+        {
+
+        }
         return;
+    }
+
+    std::pair<std::vector<int>,std::vector<int> > Solver::getDeleteLinesIndex(Eigen::MatrixXd mat)
+    {
+        std::pair<std::vector<int>,std::vector<int> > ret;
+        std::vector<std::pair<int,int> > zero_index = getZeroIndex(mat);
+        std::vector<std::pair<int,int> > zero_index_list;
+        std::copy(zero_index.begin(), zero_index.end(), back_inserter(zero_index_list));
+        std::vector<int> col_lists;
+        std::vector<int> row_lists;
+        std::vector<std::string> rc_lists;
+        std::vector<int> index_lists;
+        while(zero_index_list.size() > 0)
+        {
+            std::vector<int> col_counts = std::vector<int>(mat.cols(),0);
+            std::vector<int> row_counts = std::vector<int>(mat.rows(),0);
+            for(auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++)
+            {
+                col_counts[itr->second] = col_counts[itr->second] + 1;
+                row_counts[itr->first] = row_counts[itr->first] + 1;
+            }
+            std::vector<int>::iterator max_col_itr = std::max_element(col_counts.begin(), col_counts.end());
+            std::vector<int>::iterator max_row_itr = std::max_element(row_counts.begin(), row_counts.end());
+            size_t max_col = std::distance(col_counts.begin(), max_col_itr);
+            size_t max_row = std::distance(row_counts.begin(), max_row_itr);
+            std::vector<std::pair<int,int> > tmp_zero_index_list;
+            if(col_counts[max_col]>=row_counts[max_row])
+            {
+                col_lists.push_back((int)max_col);
+                for(auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++)
+                {
+                    if(itr->second != max_col)
+                    {
+                        tmp_zero_index_list.push_back(std::make_pair(itr->first,itr->second));
+                    }
+                }
+            }
+            else
+            {
+                row_lists.push_back((int)max_row);
+                for(auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++)
+                {
+                    if(itr->first != max_row)
+                    {
+                        tmp_zero_index_list.push_back(std::make_pair(itr->first,itr->second));
+                    }
+                }
+            }
+            zero_index_list = tmp_zero_index_list;
+            ret.first = row_lists;
+            ret.second = col_lists;
+        }
+        return ret;
     }
 
     std::vector<std::pair<int,int> > Solver::getZeroIndex(Eigen::MatrixXd mat)

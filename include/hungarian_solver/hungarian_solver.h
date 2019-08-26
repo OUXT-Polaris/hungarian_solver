@@ -72,6 +72,10 @@ namespace hungarian_solver
          * @brief get index with value zero
          */
         std::vector<std::pair<int,int> > getZeroIndex(Eigen::MatrixXd mat);
+        /**
+         * @brief get delete lines index
+         */
+        std::pair<std::vector<int>,std::vector<int> > getDeleteLinesIndex(Eigen::MatrixXd mat);
         // macros for Rostest
         friend class SolverTestSuite;
         /**
@@ -129,5 +133,10 @@ namespace hungarian_solver
          * @sa getZeroIndex
          */
         FRIEND_TEST(SolverTestSuite, getZeroIndexTestCase2);
+        /**
+         * @brief FRIENT TEST macro for getDeleteLinesIndex
+         * @sa getDeleteLinesIndex
+         */
+        FRIEND_TEST(SolverTestSuite, getDeleteLinesIndexTestCase1);
     };
 }
