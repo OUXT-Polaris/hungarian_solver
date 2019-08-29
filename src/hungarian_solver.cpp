@@ -112,17 +112,23 @@ namespace hungarian_solver
         return ret;
     }
 
-    void Solver::solve(Eigen::MatrixXd cost_matrix)
+    boost::optional<std::vector<std::pair<int,int> > > Solver::solve(Eigen::MatrixXd cost_matrix)
     {
         ROS_ASSERT(cost_matrix.rows() == cost_matrix.cols());
         cost_matrix = subtractRowMinima(cost_matrix);
         cost_matrix = subtractColMinima(cost_matrix);
-        boost::optional<std::vector<std::pair<int,int> > > assignment = getAssignment(cost_matrix);
-        if(!assignment)
+        boost::optional<std::vector<std::pair<int,int> > > assignment;
+        while(true)
         {
-
+            assignment = getAssignment(cost_matrix);
+            if(assignment)
+            {
+                break;
+            }
+            std::pair<std::vector<int>,std::vector<int> > delete_lines = getDeleteLinesIndex(cost_matrix);
+            cost_matrix = updateCostMatrix(cost_matrix,delete_lines.first,delete_lines.second);
         }
-        return;
+        return assignment;
     }
 
     std::pair<std::vector<int>,std::vector<int> > Solver::getDeleteLinesIndex(Eigen::MatrixXd mat)
@@ -221,11 +227,10 @@ namespace hungarian_solver
         return boost::none;
     }
 
-    void Solver::solve(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment)
+    boost::optional<std::vector<std::pair<int,int> > > Solver::solve(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment)
     {
         Eigen::MatrixXd padded_cost_mat = getPaddCostMatrix(cost_matrix,cost_of_non_assignment);
-        solve(padded_cost_mat);
-        return;
+        return solve(padded_cost_mat);
     }
 
     Eigen::MatrixXd Solver::subtractRowMinima(Eigen::MatrixXd mat)

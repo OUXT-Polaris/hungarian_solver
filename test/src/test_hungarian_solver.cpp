@@ -381,6 +381,33 @@ namespace hungarian_solver
         EXPECT_EQ(mat(3,2),0);
         EXPECT_EQ(mat(3,3),0);
     }
+
+    TEST(SolverTestSuite, solveCase1)
+    {
+        Eigen::MatrixXd mat(4,4);
+        mat <<
+            0, 0, 4, 2,
+            3, 5, 2, 0,
+            4, 8, 0, 2,
+            1, 1, 0, 0;
+        hungarian_solver::Solver solver;
+        boost::optional<std::vector<std::pair<int,int> > > ret = solver.solve(mat);
+        EXPECT_EQ(ret->size(),4);
+        /*
+        for(auto itr = ret.get().begin(); itr != ret.get().end(); itr++)
+        {
+            ROS_ERROR_STREAM(itr->first << "," << itr->second);
+        }
+        */
+        EXPECT_EQ(ret.get()[0].first,0);
+        EXPECT_EQ(ret.get()[0].second,0);
+        EXPECT_EQ(ret.get()[1].first,1);
+        EXPECT_EQ(ret.get()[1].second,3);
+        EXPECT_EQ(ret.get()[2].first,2);
+        EXPECT_EQ(ret.get()[2].second,2);
+        EXPECT_EQ(ret.get()[3].first,3);
+        EXPECT_EQ(ret.get()[3].second,1);
+    }
 }
 
 // Run all the tests that were declared with TEST()

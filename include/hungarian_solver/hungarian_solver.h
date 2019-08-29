@@ -38,11 +38,11 @@ namespace hungarian_solver
         /**
          * @brief solve hungarian algorithum by using padding matrix
          */
-        void solve(Eigen::MatrixXd cost_matrix);
+        boost::optional<std::vector<std::pair<int,int> > > solve(Eigen::MatrixXd cost_matrix);
         /**
          * @brief solve hungarian algorithum by using cost matrix
          */
-        void solve(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment);
+        boost::optional<std::vector<std::pair<int,int> > > solve(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment);
     private:
         /**
          * @brief update cost matrix by using delete line index
