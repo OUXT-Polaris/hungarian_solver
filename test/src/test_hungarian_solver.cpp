@@ -1,3 +1,14 @@
+/**
+ * @file test_hungarian_solver.cpp
+ * @author Masaya Kataoka (ms.kataoka@gmail.com)
+ * @brief Test Case for the hungarian solver
+ * @version 0.1
+ * @date 2019-08-27
+ * 
+ * @copyright Copyright (c) 2019
+ * 
+ */
+
 // Headers in Gtest
 #include <gtest/gtest.h>
 
@@ -70,6 +81,11 @@ namespace hungarian_solver
         std::pair<std::vector<int>,std::vector<int> > getDeleteLinesIndex(Eigen::MatrixXd mat)
         {
             return obj_.getDeleteLinesIndex(mat);
+        }
+
+        Eigen::MatrixXd updateCostMatrix(Eigen::MatrixXd mat,std::vector<int> delete_rows_index,std::vector<int> delete_cols_index)
+        {
+            return obj_.updateCostMatrix(mat,delete_rows_index,delete_cols_index);
         }
     };
 
@@ -335,6 +351,35 @@ namespace hungarian_solver
         EXPECT_EQ(ret.first[0],0);
         EXPECT_EQ(ret.second[0],2);
         EXPECT_EQ(ret.second[1],3);
+    }
+
+    TEST(SolverTestSuite, updateCostMatrixTestCase1)
+    {
+        Eigen::MatrixXd mat(4,4);
+        mat <<
+            0, 0, 4, 2,
+            3, 5, 2, 0,
+            4, 8, 0, 2,
+            1, 1, 0, 0;
+        hungarian_solver::Solver solver;
+        std::pair<std::vector<int>,std::vector<int> > ret = solver.getDeleteLinesIndex(mat);
+        mat = solver.updateCostMatrix(mat,ret.first,ret.second);
+        EXPECT_EQ(mat(0,0),0);
+        EXPECT_EQ(mat(0,1),0);
+        EXPECT_EQ(mat(0,2),5);
+        EXPECT_EQ(mat(0,3),3);
+        EXPECT_EQ(mat(1,0),2);
+        EXPECT_EQ(mat(1,1),4);
+        EXPECT_EQ(mat(1,2),2);
+        EXPECT_EQ(mat(1,3),0);
+        EXPECT_EQ(mat(2,0),3);
+        EXPECT_EQ(mat(2,1),7);
+        EXPECT_EQ(mat(2,2),0);
+        EXPECT_EQ(mat(2,3),2);
+        EXPECT_EQ(mat(3,0),0);
+        EXPECT_EQ(mat(3,1),0);
+        EXPECT_EQ(mat(3,2),0);
+        EXPECT_EQ(mat(3,3),0);
     }
 }
 

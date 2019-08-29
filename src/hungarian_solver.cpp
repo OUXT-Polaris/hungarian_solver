@@ -1,3 +1,14 @@
+/**
+ * @file hungarian_solver.cpp
+ * @author Masaya Kataoka (ms.kataoka@gmail.com)
+ * @brief Implimentation of Solver Class
+ * @version 0.1
+ * @date 2019-08-27
+ * 
+ * @copyright Copyright (c) 2019
+ * 
+ */
+
 #include <hungarian_solver/hungarian_solver.h>
 
 namespace hungarian_solver
@@ -10,6 +21,42 @@ namespace hungarian_solver
     Solver::~Solver()
     {
 
+    }
+
+    Eigen::MatrixXd Solver::updateCostMatrix(Eigen::MatrixXd mat,std::vector<int> delete_rows_index,std::vector<int> delete_cols_index)
+    {
+        std::vector<int> min_candidate_lists;
+        for(int i=0;i<mat.rows();++i)
+        {
+            for(int j=0;j<mat.cols();++j) 
+            {
+                auto result_row = std::find(delete_rows_index.begin(), delete_rows_index.end(), i);
+                auto result_col = std::find(delete_cols_index.begin(), delete_cols_index.end(), j);
+                if(result_row  == delete_rows_index.end() && result_col == delete_cols_index.end())
+                {
+                    min_candidate_lists.push_back(mat(i,j));
+                }
+            }
+        }
+        std::vector<int>::iterator min_iter = std::min_element(min_candidate_lists.begin(), min_candidate_lists.end());
+        int min_value = min_candidate_lists[std::distance(min_candidate_lists.begin(), min_iter)];
+        for(int i=0;i<mat.rows();++i)
+        {
+            for(int j=0;j<mat.cols();++j) 
+            {
+                auto result_row = std::find(delete_rows_index.begin(), delete_rows_index.end(), i);
+                auto result_col = std::find(delete_cols_index.begin(), delete_cols_index.end(), j);
+                if(result_row  == delete_rows_index.end() && result_col == delete_cols_index.end())
+                {
+                    mat(i,j) = mat(i,j) - min_value;
+                }
+                if(result_row  != delete_rows_index.end() && result_col != delete_cols_index.end())
+                {
+                    mat(i,j) = mat(i,j) + min_value;
+                }
+            }
+        }
+        return mat;
     }
 
     std::vector<bool> Solver::getNonZeroColFlags(Eigen::MatrixXd mat)

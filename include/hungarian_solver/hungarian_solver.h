@@ -45,6 +45,10 @@ namespace hungarian_solver
         void solve(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment);
     private:
         /**
+         * @brief update cost matrix by using delete line index
+         */
+        Eigen::MatrixXd updateCostMatrix(Eigen::MatrixXd mat,std::vector<int> delete_rows_index,std::vector<int> delete_cols_index);
+        /**
          * @brief subtract col values by minimam value of col
          */
         Eigen::MatrixXd subtractColMinima(Eigen::MatrixXd mat);
@@ -138,5 +142,10 @@ namespace hungarian_solver
          * @sa getDeleteLinesIndex
          */
         FRIEND_TEST(SolverTestSuite, getDeleteLinesIndexTestCase1);
+        /**
+         * @brief FRIENT TEST macro for updateCostMatrix
+         * @sa updateCostMatrix
+         */
+        FRIEND_TEST(SolverTestSuite, updateCostMatrixTestCase1);
     };
 }
