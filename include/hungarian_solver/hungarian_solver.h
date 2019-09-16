@@ -17,6 +17,7 @@
 #include <ros/ros.h>
 
 // Headers in STL
+#include <random>
 #include <float.h>
 
 // Headers in Google Test

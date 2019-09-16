@@ -25,7 +25,7 @@ namespace hungarian_solver
 
     Eigen::MatrixXd Solver::updateCostMatrix(Eigen::MatrixXd mat,std::vector<int> delete_rows_index,std::vector<int> delete_cols_index)
     {
-        std::vector<int> min_candidate_lists;
+        std::vector<double> min_candidate_lists;
         for(int i=0;i<mat.rows();++i)
         {
             for(int j=0;j<mat.cols();++j) 
@@ -38,8 +38,8 @@ namespace hungarian_solver
                 }
             }
         }
-        std::vector<int>::iterator min_iter = std::min_element(min_candidate_lists.begin(), min_candidate_lists.end());
-        int min_value = min_candidate_lists[std::distance(min_candidate_lists.begin(), min_iter)];
+        std::vector<double>::iterator min_iter = std::min_element(min_candidate_lists.begin(), min_candidate_lists.end());
+        double min_value = min_candidate_lists[std::distance(min_candidate_lists.begin(), min_iter)];
         for(int i=0;i<mat.rows();++i)
         {
             for(int j=0;j<mat.cols();++j) 
@@ -114,10 +114,10 @@ namespace hungarian_solver
 
     boost::optional<std::vector<std::pair<int,int> > > Solver::solve(Eigen::MatrixXd cost_matrix)
     {
+        boost::optional<std::vector<std::pair<int,int> > > assignment;
         ROS_ASSERT(cost_matrix.rows() == cost_matrix.cols());
         cost_matrix = subtractRowMinima(cost_matrix);
         cost_matrix = subtractColMinima(cost_matrix);
-        boost::optional<std::vector<std::pair<int,int> > > assignment;
         while(true)
         {
             assignment = getAssignment(cost_matrix);
@@ -133,54 +133,92 @@ namespace hungarian_solver
 
     std::pair<std::vector<int>,std::vector<int> > Solver::getDeleteLinesIndex(Eigen::MatrixXd mat)
     {
+        std::random_device seed_gen;
+        std::default_random_engine engine(seed_gen());
+        std::uniform_int_distribution<> dist(0, 1);
         std::pair<std::vector<int>,std::vector<int> > ret;
-        std::vector<std::pair<int,int> > zero_index = getZeroIndex(mat);
-        std::vector<std::pair<int,int> > zero_index_list;
-        std::copy(zero_index.begin(), zero_index.end(), back_inserter(zero_index_list));
         std::vector<int> col_lists;
         std::vector<int> row_lists;
-        std::vector<std::string> rc_lists;
-        std::vector<int> index_lists;
-        while(zero_index_list.size() > 0)
+        do
         {
-            std::vector<int> col_counts = std::vector<int>(mat.cols(),0);
-            std::vector<int> row_counts = std::vector<int>(mat.rows(),0);
-            for(auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++)
+            std::vector<std::pair<int,int> > zero_index = getZeroIndex(mat);
+            std::vector<std::pair<int,int> > zero_index_list;
+            std::copy(zero_index.begin(), zero_index.end(), back_inserter(zero_index_list));
+            col_lists = std::vector<int>();
+            row_lists = std::vector<int>();
+            std::vector<std::string> rc_lists;
+            std::vector<int> index_lists;
+            while(zero_index_list.size() > 0)
             {
-                col_counts[itr->second] = col_counts[itr->second] + 1;
-                row_counts[itr->first] = row_counts[itr->first] + 1;
-            }
-            std::vector<int>::iterator max_col_itr = std::max_element(col_counts.begin(), col_counts.end());
-            std::vector<int>::iterator max_row_itr = std::max_element(row_counts.begin(), row_counts.end());
-            size_t max_col = std::distance(col_counts.begin(), max_col_itr);
-            size_t max_row = std::distance(row_counts.begin(), max_row_itr);
-            std::vector<std::pair<int,int> > tmp_zero_index_list;
-            if(col_counts[max_col]>=row_counts[max_row])
-            {
-                col_lists.push_back((int)max_col);
+                std::vector<int> col_counts = std::vector<int>(mat.cols(),0);
+                std::vector<int> row_counts = std::vector<int>(mat.rows(),0);
                 for(auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++)
                 {
-                    if(itr->second != max_col)
-                    {
-                        tmp_zero_index_list.push_back(std::make_pair(itr->first,itr->second));
-                    }
+                    col_counts[itr->second] = col_counts[itr->second] + 1;
+                    row_counts[itr->first] = row_counts[itr->first] + 1;
                 }
-            }
-            else
-            {
-                row_lists.push_back((int)max_row);
-                for(auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++)
+                std::vector<int>::iterator max_col_itr = std::max_element(col_counts.begin(), col_counts.end());
+                std::vector<int>::iterator max_row_itr = std::max_element(row_counts.begin(), row_counts.end());
+                size_t max_col = std::distance(col_counts.begin(), max_col_itr);
+                size_t max_row = std::distance(row_counts.begin(), max_row_itr);
+                std::vector<std::pair<int,int> > tmp_zero_index_list;
+                if(dist(engine) == 0)
                 {
-                    if(itr->first != max_row)
+                    if(col_counts[max_col]>=row_counts[max_row])
                     {
-                        tmp_zero_index_list.push_back(std::make_pair(itr->first,itr->second));
+                        col_lists.push_back((int)max_col);
+                        for(auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++)
+                        {
+                            if(itr->second != (int)max_col)
+                            {
+                                tmp_zero_index_list.push_back(std::make_pair(itr->first,itr->second));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        row_lists.push_back((int)max_row);
+                        for(auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++)
+                        {
+                            if(itr->first != (int)max_row)
+                            {
+                                tmp_zero_index_list.push_back(std::make_pair(itr->first,itr->second));
+                            }
+                        }
                     }
                 }
+                else
+                {
+                    if(col_counts[max_col]>row_counts[max_row])
+                    {
+                        col_lists.push_back((int)max_col);
+                        for(auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++)
+                        {
+                            if(itr->second != (int)max_col)
+                            {
+                                tmp_zero_index_list.push_back(std::make_pair(itr->first,itr->second));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        row_lists.push_back((int)max_row);
+                        for(auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++)
+                        {
+                            if(itr->first != (int)max_row)
+                            {
+                                tmp_zero_index_list.push_back(std::make_pair(itr->first,itr->second));
+                            }
+                        }
+                    }
+                }
+
+                zero_index_list = tmp_zero_index_list;
+                ret.first = row_lists;
+                ret.second = col_lists;
             }
-            zero_index_list = tmp_zero_index_list;
-            ret.first = row_lists;
-            ret.second = col_lists;
         }
+        while(row_lists.size() == 0 || col_lists.size() == 0);
         return ret;
     }
 
@@ -229,8 +267,23 @@ namespace hungarian_solver
 
     boost::optional<std::vector<std::pair<int,int> > > Solver::solve(Eigen::MatrixXd cost_matrix,double cost_of_non_assignment)
     {
+        std::vector<std::pair<int,int> > assignment;
         Eigen::MatrixXd padded_cost_mat = getPaddCostMatrix(cost_matrix,cost_of_non_assignment);
-        return solve(padded_cost_mat);
+        boost::optional<std::vector<std::pair<int,int> > > result = solve(padded_cost_mat);
+        if(!result)
+        {
+            return boost::none;
+        }
+        int rows = cost_matrix.rows();
+        int cols = cost_matrix.cols();
+        for(auto itr = result.get().begin(); itr != result.get().end(); itr++)
+        {
+            if(itr->first<rows && itr->second<cols)
+            {
+                assignment.push_back(std::make_pair(itr->first,itr->second));
+            }
+        }
+        return assignment;
     }
 
     Eigen::MatrixXd Solver::subtractRowMinima(Eigen::MatrixXd mat)
@@ -278,8 +331,8 @@ namespace hungarian_solver
         {
             padded_cost_mat(i+cost_matrix.rows(),i) = cost_of_non_assignment;
         }
-        padded_cost_mat.block(cost_matrix.rows(),cost_matrix.cols(),cost_matrix.rows(),cost_matrix.cols()) 
-            = Eigen::MatrixXd::Zero(cost_matrix.rows(),cost_matrix.cols());
+        padded_cost_mat.block(cost_matrix.rows(),cost_matrix.cols(),cost_matrix.cols(),cost_matrix.rows())
+            = Eigen::MatrixXd::Zero(cost_matrix.cols(),cost_matrix.rows());
         return padded_cost_mat;
     }
 }
