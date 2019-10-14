@@ -14,7 +14,7 @@
 #include <Eigen/Core>
 
 // Headers in ROS
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 // Headers in STL
 #include <random>

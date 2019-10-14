@@ -100,7 +100,7 @@ namespace hungarian_solver
         std::vector<bool> row_flags = std::vector<bool>(size);
         std::vector<bool> col_flags = std::vector<bool>(size);
         Eigen::MatrixXd ret = Eigen::MatrixXd::Zero(size, size);
-        for(int i=0; i<zero_index.size(); i++)
+        for(size_t i=0; i<zero_index.size(); i++)
         {
             if(row_flags[zero_index[i].first] == false && col_flags[zero_index[i].second] == false)
             {
@@ -115,7 +115,7 @@ namespace hungarian_solver
     boost::optional<std::vector<std::pair<int,int> > > Solver::solve(Eigen::MatrixXd cost_matrix)
     {
         boost::optional<std::vector<std::pair<int,int> > > assignment;
-        ROS_ASSERT(cost_matrix.rows() == cost_matrix.cols());
+        assert(cost_matrix.rows() == cost_matrix.cols());
         cost_matrix = subtractRowMinima(cost_matrix);
         cost_matrix = subtractColMinima(cost_matrix);
         while(true)
@@ -243,7 +243,7 @@ namespace hungarian_solver
 
     boost::optional<std::vector<std::pair<int,int> > > Solver::getAssignment(Eigen::MatrixXd mat)
     {
-        ROS_ASSERT(mat.rows() == mat.cols());
+        assert(mat.rows() == mat.cols());
         std::vector<std::pair<int,int> > ret;
         std::vector<std::pair<int,int> > zero_index = getZeroIndex(mat);
         std::vector<bool> col_flags = std::vector<bool>(mat.cols(),false);
@@ -258,7 +258,7 @@ namespace hungarian_solver
                 ret.push_back(pair);
             }
         }
-        if(ret.size() == mat.rows())
+        if(ret.size() == (size_t)mat.rows())
         {
             return ret;
         }
