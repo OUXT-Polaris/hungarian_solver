@@ -26,9 +26,6 @@
 // Headers in Gtest
 #include <gtest/gtest.h>
 
-// Headers in ROS
-#include <ros/ros.h>
-
 // Headers in this package
 #include <hungarian_solver/hungarian_solver.hpp>
 
