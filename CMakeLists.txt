@@ -42,29 +42,13 @@ install(
   DESTINATION include
 )
 
-#if (CATKIN_ENABLE_TESTING)
-#  find_package(rostest REQUIRED)
-#  find_package(code_coverage REQUIRED)
-#  if(ENABLE_COVERAGE_TESTING)
-#    include(CodeCoverage)
-#    APPEND_COVERAGE_COMPILER_FLAGS()
-#  endif()
-
-#  add_rostest_gtest(test-hungarian_solver
-#  test/test_hungarian_solver.test
-#  test/src/test_hungarian_solver.cpp)
-#  target_link_libraries(test-hungarian_solver
-#  ${catkin_LIBRARIES}
-#  hungarian_solver)
-
-#  if(ENABLE_COVERAGE_TESTING)
-#    set(COVERAGE_EXCLUDES "*/hungarian_solver/test*" "*/hungarian_solver/coverage")
-#    add_code_coverage(
-#      NAME hungarian_solver_coverage
-#      DEPENDS tests
-#    )
-#  endif()
-#endif ()
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(test_test_hungarian_solver test/src/test_hungarian_solver.cpp)
+  target_link_libraries(test_test_hungarian_solver hungarian_solver)
+endif()
 
 ament_export_include_directories(include)
 ament_package()

@@ -1,3 +1,0 @@
-<launch>
-    <test test-name="test-hungarian_solver" pkg="hungarian_solver" type="test-hungarian_solver" name="test"/>
-</launch>
