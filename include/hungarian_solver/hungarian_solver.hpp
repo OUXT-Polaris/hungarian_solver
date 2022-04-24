@@ -54,12 +54,12 @@ public:
   /**
          * @brief solve hungarian algorithum by using padding matrix
          */
-  boost::optional<std::vector<std::pair<int, int> > > solve(Eigen::MatrixXd & cost_matrix);
+  boost::optional<std::vector<std::pair<int, int> > > solve(Eigen::MatrixXd & cost_matrix) const;
   /**
          * @brief solve hungarian algorithum by using cost matrix
          */
   boost::optional<std::vector<std::pair<int, int> > > solve(
-    const Eigen::MatrixXd & cost_matrix, double cost_of_non_assignment);
+    const Eigen::MatrixXd & cost_matrix, double cost_of_non_assignment) const;
 
 private:
   /**
@@ -67,41 +67,42 @@ private:
          */
   Eigen::MatrixXd updateCostMatrix(
     Eigen::MatrixXd & mat, const std::vector<int> & delete_rows_index,
-    const std::vector<int> & delete_cols_index);
+    const std::vector<int> & delete_cols_index) const;
   /**
          * @brief subtract col values by minimam value of col
          */
-  Eigen::MatrixXd subtractColMinima(Eigen::MatrixXd & mat);
+  Eigen::MatrixXd subtractColMinima(Eigen::MatrixXd & mat) const;
   /**
          * @brief subtract row values by minimam value of row
          */
-  Eigen::MatrixXd subtractRowMinima(Eigen::MatrixXd & mat);
+  Eigen::MatrixXd subtractRowMinima(Eigen::MatrixXd & mat) const;
   /**
          * @brief get non zero col flags
          */
-  std::vector<bool> getNonZeroColFlags(const Eigen::MatrixXd & mat);
+  std::vector<bool> getNonZeroColFlags(const Eigen::MatrixXd & mat) const;
   /**
          * @brief get initial cost matrix 
          */
-  Eigen::MatrixXd getInitialCostMatrix(const Eigen::MatrixXd & cost_matrix);
+  Eigen::MatrixXd getInitialCostMatrix(const Eigen::MatrixXd & cost_matrix) const;
   /**
          * @brief get padded cost matrix
          */
   Eigen::MatrixXd getPaddCostMatrix(
-    const Eigen::MatrixXd & cost_matrix, double cost_of_non_assignment);
+    const Eigen::MatrixXd & cost_matrix, double cost_of_non_assignment) const;
   /**
          * @brief get assinment of cost matrix
          */
   boost::optional<std::vector<std::pair<int, int> > > getAssignment(
-    const Eigen::MatrixXd & cost_matrix);
+    const Eigen::MatrixXd & cost_matrix) const;
   /**
          * @brief get index with value zero
          */
-  std::vector<std::pair<int, int> > getZeroIndex(const Eigen::MatrixXd & mat);
+  std::vector<std::pair<int, int> > getZeroIndex(const Eigen::MatrixXd & mat) const;
   /**
          * @brief get delete lines index
          */
-  std::pair<std::vector<int>, std::vector<int> > getDeleteLinesIndex(const Eigen::MatrixXd & mat);
+  std::pair<std::vector<int>, std::vector<int> > getDeleteLinesIndex(
+    const Eigen::MatrixXd & mat) const;
 
   // macros for Rostest
   friend class SolverTestSuite;
