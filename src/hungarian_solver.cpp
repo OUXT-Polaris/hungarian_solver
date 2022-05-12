@@ -136,16 +136,14 @@ std::pair<std::vector<int>, std::vector<int> > Solver::getDeleteLinesIndex(
   std::vector<int> row_lists;
   do {
     std::vector<std::pair<int, int> > zero_index = getZeroIndex(mat);
-    std::vector<std::pair<int, int> > zero_index_list;
-    std::copy(zero_index.begin(), zero_index.end(), back_inserter(zero_index_list));
     col_lists = std::vector<int>();
     row_lists = std::vector<int>();
     std::vector<std::string> rc_lists;
     std::vector<int> index_lists;
-    while (zero_index_list.size() > 0) {
+    while (zero_index.size() > 0) {
       std::vector<int> col_counts = std::vector<int>(mat.cols(), 0);
       std::vector<int> row_counts = std::vector<int>(mat.rows(), 0);
-      for (auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++) {
+      for (auto itr = zero_index.begin(); itr != zero_index.end(); itr++) {
         col_counts[itr->second] = col_counts[itr->second] + 1;
         row_counts[itr->first] = row_counts[itr->first] + 1;
       }
@@ -155,42 +153,42 @@ std::pair<std::vector<int>, std::vector<int> > Solver::getDeleteLinesIndex(
         std::max_element(row_counts.begin(), row_counts.end());
       size_t max_col = std::distance(col_counts.begin(), max_col_itr);
       size_t max_row = std::distance(row_counts.begin(), max_row_itr);
-      std::vector<std::pair<int, int> > tmp_zero_index_list;
+      std::vector<std::pair<int, int> > tmp_zero_index;
       if (dist(engine) == 0) {
         if (col_counts[max_col] >= row_counts[max_row]) {
           col_lists.push_back((int)max_col);
-          for (auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++) {
+          for (auto itr = zero_index.begin(); itr != zero_index.end(); itr++) {
             if (itr->second != (int)max_col) {
-              tmp_zero_index_list.push_back(std::make_pair(itr->first, itr->second));
+              tmp_zero_index.push_back(std::make_pair(itr->first, itr->second));
             }
           }
         } else {
           row_lists.push_back((int)max_row);
-          for (auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++) {
+          for (auto itr = zero_index.begin(); itr != zero_index.end(); itr++) {
             if (itr->first != (int)max_row) {
-              tmp_zero_index_list.push_back(std::make_pair(itr->first, itr->second));
+              tmp_zero_index.push_back(std::make_pair(itr->first, itr->second));
             }
           }
         }
       } else {
         if (col_counts[max_col] > row_counts[max_row]) {
           col_lists.push_back((int)max_col);
-          for (auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++) {
+          for (auto itr = zero_index.begin(); itr != zero_index.end(); itr++) {
             if (itr->second != (int)max_col) {
-              tmp_zero_index_list.push_back(std::make_pair(itr->first, itr->second));
+              tmp_zero_index.push_back(std::make_pair(itr->first, itr->second));
             }
           }
         } else {
           row_lists.push_back((int)max_row);
-          for (auto itr = zero_index_list.begin(); itr != zero_index_list.end(); itr++) {
+          for (auto itr = zero_index.begin(); itr != zero_index.end(); itr++) {
             if (itr->first != (int)max_row) {
-              tmp_zero_index_list.push_back(std::make_pair(itr->first, itr->second));
+              tmp_zero_index.push_back(std::make_pair(itr->first, itr->second));
             }
           }
         }
       }
 
-      zero_index_list = tmp_zero_index_list;
+      zero_index = tmp_zero_index;
       ret.first = row_lists;
       ret.second = col_lists;
     }
