@@ -250,7 +250,7 @@ TEST(SolverTestSuite, getAssignmentTestCase1)
   mat << 0, 0, 5, 3, 2, 4, 2, 0, 3, 7, 0, 2, 0, 0, 0, 0;
   hungarian_solver::Solver solver;
   boost::optional<std::vector<std::pair<int, int> > > ret = solver.getAssignment(mat);
-  EXPECT_EQ(ret->size(), 4);
+  EXPECT_EQ(ret->size(), static_cast<size_t>(4));
   EXPECT_EQ(ret.get()[0].first, 0);
   EXPECT_EQ(ret.get()[0].second, 0);
   EXPECT_EQ(ret.get()[1].first, 1);
@@ -276,7 +276,7 @@ TEST(SolverTestSuite, getZeroIndexTestCase1)
   mat << 0, 2, 1, 2;
   hungarian_solver::Solver solver;
   std::vector<std::pair<int, int> > ret = solver.getZeroIndex(mat);
-  EXPECT_EQ(ret.size(), 1);
+  EXPECT_EQ(ret.size(), static_cast<size_t>(1));
   EXPECT_EQ(ret[0].first, 0);
   EXPECT_EQ(ret[0].second, 0);
 }
@@ -287,7 +287,7 @@ TEST(SolverTestSuite, getZeroIndexTestCase2)
   mat << 0, 2, 0, 0;
   hungarian_solver::Solver solver;
   std::vector<std::pair<int, int> > ret = solver.getZeroIndex(mat);
-  EXPECT_EQ(ret.size(), 3);
+  EXPECT_EQ(ret.size(), static_cast<size_t>(3));
   EXPECT_EQ(ret[0].first, 0);
   EXPECT_EQ(ret[0].second, 0);
   EXPECT_EQ(ret[1].first, 1);
@@ -344,7 +344,7 @@ TEST(SolverTestSuite, solveCase1)
   mat << 0, 0, 4, 2, 3, 5, 2, 0, 4, 8, 0, 2, 1, 1, 0, 0;
   hungarian_solver::Solver solver;
   boost::optional<std::vector<std::pair<int, int> > > ret = solver.solve(mat);
-  EXPECT_EQ(ret->size(), 4);
+  EXPECT_EQ(ret->size(), static_cast<size_t>(4));
   EXPECT_EQ(ret.get()[0].first, 0);
   EXPECT_EQ(ret.get()[0].second, 0);
   EXPECT_EQ(ret.get()[1].first, 1);
@@ -361,7 +361,7 @@ TEST(SolverTestSuite, solveCase2)
   mat << 0, 0, 0, 1, 2, 3, 2, 3, 0;
   hungarian_solver::Solver solver;
   boost::optional<std::vector<std::pair<int, int> > > ret = solver.solve(mat, 3);
-  EXPECT_EQ(ret->size(), 3);
+  EXPECT_EQ(ret->size(), static_cast<size_t>(3));
   EXPECT_EQ(ret.get()[0].first, 0);
   EXPECT_EQ(ret.get()[0].second, 1);
   EXPECT_EQ(ret.get()[1].first, 1);
@@ -376,7 +376,7 @@ TEST(SolverTestSuite, solveCase3)
   mat << 0, 0, 0, 1, 2, 3;
   hungarian_solver::Solver solver;
   boost::optional<std::vector<std::pair<int, int> > > ret = solver.solve(mat, 3);
-  EXPECT_EQ(ret->size(), 2);
+  EXPECT_EQ(ret->size(), static_cast<size_t>(2));
   EXPECT_EQ(ret.get()[0].first, 0);
   EXPECT_EQ(ret.get()[0].second, 1);
   EXPECT_EQ(ret.get()[1].first, 1);
