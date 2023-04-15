@@ -39,7 +39,7 @@
 #include <gtest/gtest.h>
 
 // Headers in Boost
-#include <boost/optional.hpp>
+#include <optional>
 
 namespace hungarian_solver
 {
@@ -54,11 +54,11 @@ public:
   /**
          * @brief solve hungarian algorithum by using padding matrix
          */
-  boost::optional<std::vector<std::pair<int, int> > > solve(Eigen::MatrixXd cost_matrix);
+  std::optional<std::vector<std::pair<int, int> > > solve(Eigen::MatrixXd cost_matrix);
   /**
          * @brief solve hungarian algorithum by using cost matrix
          */
-  boost::optional<std::vector<std::pair<int, int> > > solve(
+  std::optional<std::vector<std::pair<int, int> > > solve(
     Eigen::MatrixXd cost_matrix, double cost_of_non_assignment);
 
 private:
@@ -90,7 +90,7 @@ private:
   /**
          * @brief get assinment of cost matrix
          */
-  boost::optional<std::vector<std::pair<int, int> > > getAssignment(Eigen::MatrixXd cost_matrix);
+  std::optional<std::vector<std::pair<int, int> > > getAssignment(Eigen::MatrixXd cost_matrix);
   /**
          * @brief get index with value zero
          */

@@ -106,9 +106,9 @@ Eigen::MatrixXd Solver::getInitialCostMatrix(Eigen::MatrixXd cost_matrix)
   return ret;
 }
 
-boost::optional<std::vector<std::pair<int, int> > > Solver::solve(Eigen::MatrixXd cost_matrix)
+std::optional<std::vector<std::pair<int, int> > > Solver::solve(Eigen::MatrixXd cost_matrix)
 {
-  boost::optional<std::vector<std::pair<int, int> > > assignment;
+  std::optional<std::vector<std::pair<int, int> > > assignment;
   assert(cost_matrix.rows() == cost_matrix.cols());
   cost_matrix = subtractRowMinima(cost_matrix);
   cost_matrix = subtractColMinima(cost_matrix);
@@ -211,7 +211,7 @@ std::vector<std::pair<int, int> > Solver::getZeroIndex(Eigen::MatrixXd mat)
   return ret;
 }
 
-boost::optional<std::vector<std::pair<int, int> > > Solver::getAssignment(Eigen::MatrixXd mat)
+std::optional<std::vector<std::pair<int, int> > > Solver::getAssignment(Eigen::MatrixXd mat)
 {
   assert(mat.rows() == mat.cols());
   std::vector<std::pair<int, int> > ret;
@@ -229,23 +229,21 @@ boost::optional<std::vector<std::pair<int, int> > > Solver::getAssignment(Eigen:
   if (ret.size() == (size_t)mat.rows()) {
     return ret;
   }
-  return boost::none;
+  return std::nullopt;
 }
 
-boost::optional<std::vector<std::pair<int, int> > > Solver::solve(
+std::optional<std::vector<std::pair<int, int> > > Solver::solve(
   Eigen::MatrixXd cost_matrix, double cost_of_non_assignment)
 {
   std::vector<std::pair<int, int> > assignment;
   Eigen::MatrixXd padded_cost_mat = getPaddCostMatrix(cost_matrix, cost_of_non_assignment);
-  boost::optional<std::vector<std::pair<int, int> > > result = solve(padded_cost_mat);
+  std::optional<std::vector<std::pair<int, int> > > result = solve(padded_cost_mat);
   if (!result) {
-    return boost::none;
+    return std::nullopt;
   }
-  int rows = cost_matrix.rows();
-  int cols = cost_matrix.cols();
-  for (auto itr = result.get().begin(); itr != result.get().end(); itr++) {
-    if (itr->first < rows && itr->second < cols) {
-      assignment.push_back(std::make_pair(itr->first, itr->second));
+  for (const auto & val : result.value()) {
+    if (val.first < cost_matrix.rows() && val.second < cost_matrix.cols()) {
+      assignment.emplace_back(std::make_pair(val.first, val.second));
     }
   }
   return assignment;
