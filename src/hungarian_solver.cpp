@@ -32,8 +32,10 @@ Solver::Solver() {}
 Solver::~Solver() {}
 
 Eigen::MatrixXd Solver::updateCostMatrix(
-  Eigen::MatrixXd mat, std::vector<int> delete_rows_index, std::vector<int> delete_cols_index)
+  const Eigen::MatrixXd & matrix, const std::vector<int> & delete_rows_index,
+  const std::vector<int> & delete_cols_index) const
 {
+  Eigen::MatrixXd mat = matrix;
   std::vector<double> min_candidate_lists;
   for (int i = 0; i < mat.rows(); ++i) {
     for (int j = 0; j < mat.cols(); ++j) {
@@ -62,7 +64,7 @@ Eigen::MatrixXd Solver::updateCostMatrix(
   return mat;
 }
 
-std::vector<bool> Solver::getNonZeroColFlags(Eigen::MatrixXd mat)
+std::vector<bool> Solver::getNonZeroColFlags(const Eigen::MatrixXd & mat) const
 {
   std::vector<bool> flags(mat.cols());
   for (auto itr = flags.begin(); itr != flags.end(); itr++) {
@@ -80,7 +82,7 @@ std::vector<bool> Solver::getNonZeroColFlags(Eigen::MatrixXd mat)
   return flags;
 }
 
-Eigen::MatrixXd Solver::getInitialCostMatrix(Eigen::MatrixXd cost_matrix)
+Eigen::MatrixXd Solver::getInitialCostMatrix(const Eigen::MatrixXd & cost_matrix) const
 {
   std::vector<std::pair<int, int> > zero_index;
   for (int i = 0; i < cost_matrix.rows(); i++) {
@@ -106,12 +108,12 @@ Eigen::MatrixXd Solver::getInitialCostMatrix(Eigen::MatrixXd cost_matrix)
   return ret;
 }
 
-boost::optional<std::vector<std::pair<int, int> > > Solver::solve(Eigen::MatrixXd cost_matrix)
+std::optional<std::vector<std::pair<int, int> > > Solver::solve(Eigen::MatrixXd cost_matrix) const
 {
-  boost::optional<std::vector<std::pair<int, int> > > assignment;
+  std::optional<std::vector<std::pair<int, int> > > assignment;
   assert(cost_matrix.rows() == cost_matrix.cols());
-  cost_matrix = subtractRowMinima(cost_matrix);
-  cost_matrix = subtractColMinima(cost_matrix);
+  subtractRowMinima(cost_matrix);
+  subtractColMinima(cost_matrix);
   while (true) {
     assignment = getAssignment(cost_matrix);
     if (assignment) {
@@ -123,7 +125,8 @@ boost::optional<std::vector<std::pair<int, int> > > Solver::solve(Eigen::MatrixX
   return assignment;
 }
 
-std::pair<std::vector<int>, std::vector<int> > Solver::getDeleteLinesIndex(Eigen::MatrixXd mat)
+std::pair<std::vector<int>, std::vector<int> > Solver::getDeleteLinesIndex(
+  const Eigen::MatrixXd & mat) const
 {
   std::random_device seed_gen;
   std::default_random_engine engine(seed_gen());
@@ -195,7 +198,7 @@ std::pair<std::vector<int>, std::vector<int> > Solver::getDeleteLinesIndex(Eigen
   return ret;
 }
 
-std::vector<std::pair<int, int> > Solver::getZeroIndex(Eigen::MatrixXd mat)
+std::vector<std::pair<int, int> > Solver::getZeroIndex(const Eigen::MatrixXd & mat) const
 {
   std::vector<std::pair<int, int> > ret;
   for (int i = 0; i < mat.rows(); i++) {
@@ -211,7 +214,8 @@ std::vector<std::pair<int, int> > Solver::getZeroIndex(Eigen::MatrixXd mat)
   return ret;
 }
 
-boost::optional<std::vector<std::pair<int, int> > > Solver::getAssignment(Eigen::MatrixXd mat)
+std::optional<std::vector<std::pair<int, int> > > Solver::getAssignment(
+  const Eigen::MatrixXd & mat) const
 {
   assert(mat.rows() == mat.cols());
   std::vector<std::pair<int, int> > ret;
@@ -229,29 +233,27 @@ boost::optional<std::vector<std::pair<int, int> > > Solver::getAssignment(Eigen:
   if (ret.size() == (size_t)mat.rows()) {
     return ret;
   }
-  return boost::none;
+  return std::nullopt;
 }
 
-boost::optional<std::vector<std::pair<int, int> > > Solver::solve(
-  Eigen::MatrixXd cost_matrix, double cost_of_non_assignment)
+std::optional<std::vector<std::pair<int, int> > > Solver::solve(
+  const Eigen::MatrixXd & cost_matrix, double cost_of_non_assignment) const
 {
   std::vector<std::pair<int, int> > assignment;
   Eigen::MatrixXd padded_cost_mat = getPaddCostMatrix(cost_matrix, cost_of_non_assignment);
-  boost::optional<std::vector<std::pair<int, int> > > result = solve(padded_cost_mat);
+  std::optional<std::vector<std::pair<int, int> > > result = solve(padded_cost_mat);
   if (!result) {
-    return boost::none;
+    return std::nullopt;
   }
-  int rows = cost_matrix.rows();
-  int cols = cost_matrix.cols();
-  for (auto itr = result.get().begin(); itr != result.get().end(); itr++) {
-    if (itr->first < rows && itr->second < cols) {
-      assignment.push_back(std::make_pair(itr->first, itr->second));
+  for (const auto & val : result.value()) {
+    if (val.first < cost_matrix.rows() && val.second < cost_matrix.cols()) {
+      assignment.emplace_back(std::make_pair(val.first, val.second));
     }
   }
   return assignment;
 }
 
-Eigen::MatrixXd Solver::subtractRowMinima(Eigen::MatrixXd mat)
+void Solver::subtractRowMinima(Eigen::MatrixXd & mat) const
 {
   for (int i = 0; i < mat.rows(); i++) {
     Eigen::MatrixXd block = mat.block(i, 0, 1, mat.cols());
@@ -261,10 +263,9 @@ Eigen::MatrixXd Solver::subtractRowMinima(Eigen::MatrixXd mat)
     }
     mat.block(i, 0, 1, mat.cols()) = block;
   }
-  return mat;
 }
 
-Eigen::MatrixXd Solver::subtractColMinima(Eigen::MatrixXd mat)
+void Solver::subtractColMinima(Eigen::MatrixXd & mat) const
 {
   for (int i = 0; i < mat.cols(); i++) {
     Eigen::MatrixXd block = mat.block(0, i, mat.rows(), 1);
@@ -274,11 +275,10 @@ Eigen::MatrixXd Solver::subtractColMinima(Eigen::MatrixXd mat)
     }
     mat.block(0, i, mat.rows(), 1) = block;
   }
-  return mat;
 }
 
 Eigen::MatrixXd Solver::getPaddCostMatrix(
-  Eigen::MatrixXd cost_matrix, double cost_of_non_assignment)
+  const Eigen::MatrixXd & cost_matrix, double cost_of_non_assignment) const
 {
   int size = cost_matrix.rows() + cost_matrix.cols();
   Eigen::MatrixXd padded_cost_mat = Eigen::MatrixXd::Ones(size, size);

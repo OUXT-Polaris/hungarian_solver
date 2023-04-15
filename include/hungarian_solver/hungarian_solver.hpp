@@ -39,132 +39,136 @@
 #include <gtest/gtest.h>
 
 // Headers in Boost
-#include <boost/optional.hpp>
+#include <optional>
 
 namespace hungarian_solver
 {
 /**
-     * @brief Hungarian Solver Class
-     */
+* @brief Hungarian Solver Class
+*/
 class Solver
 {
 public:
   Solver();
   ~Solver();
   /**
-         * @brief solve hungarian algorithum by using padding matrix
-         */
-  boost::optional<std::vector<std::pair<int, int> > > solve(Eigen::MatrixXd cost_matrix);
+   * @brief solve hungarian algorithum by using padding matrix
+   */
+  std::optional<std::vector<std::pair<int, int> > > solve(Eigen::MatrixXd cost_matrix) const;
   /**
-         * @brief solve hungarian algorithum by using cost matrix
-         */
-  boost::optional<std::vector<std::pair<int, int> > > solve(
-    Eigen::MatrixXd cost_matrix, double cost_of_non_assignment);
+   * @brief solve hungarian algorithum by using cost matrix
+   */
+  std::optional<std::vector<std::pair<int, int> > > solve(
+    const Eigen::MatrixXd & cost_matrix, double cost_of_non_assignment) const;
 
 private:
   /**
-         * @brief update cost matrix by using delete line index
-         */
+   * @brief update cost matrix by using delete line index
+   */
   Eigen::MatrixXd updateCostMatrix(
-    Eigen::MatrixXd mat, std::vector<int> delete_rows_index, std::vector<int> delete_cols_index);
+    const Eigen::MatrixXd & mat, const std::vector<int> & delete_rows_index,
+    const std::vector<int> & delete_cols_index) const;
   /**
-         * @brief subtract col values by minimam value of col
-         */
-  Eigen::MatrixXd subtractColMinima(Eigen::MatrixXd mat);
+   * @brief subtract col values by minimam value of col
+   */
+  void subtractColMinima(Eigen::MatrixXd & mat) const;
   /**
-         * @brief subtract row values by minimam value of row
-         */
-  Eigen::MatrixXd subtractRowMinima(Eigen::MatrixXd mat);
+   * @brief subtract row values by minimam value of row
+   */
+  void subtractRowMinima(Eigen::MatrixXd & mat) const;
   /**
-         * @brief get non zero col flags
-         */
-  std::vector<bool> getNonZeroColFlags(Eigen::MatrixXd mat);
+   * @brief get non zero col flags
+   */
+  std::vector<bool> getNonZeroColFlags(const Eigen::MatrixXd & mat) const;
   /**
-         * @brief get initial cost matrix 
-         */
-  Eigen::MatrixXd getInitialCostMatrix(Eigen::MatrixXd cost_matrix);
+   * @brief get initial cost matrix 
+   */
+  Eigen::MatrixXd getInitialCostMatrix(const Eigen::MatrixXd & cost_matrix) const;
   /**
-         * @brief get padded cost matrix
-         */
-  Eigen::MatrixXd getPaddCostMatrix(Eigen::MatrixXd cost_matrix, double cost_of_non_assignment);
+   * @brief get padded cost matrix
+   */
+  Eigen::MatrixXd getPaddCostMatrix(
+    const Eigen::MatrixXd & cost_matrix, double cost_of_non_assignment) const;
   /**
-         * @brief get assinment of cost matrix
-         */
-  boost::optional<std::vector<std::pair<int, int> > > getAssignment(Eigen::MatrixXd cost_matrix);
+   * @brief get assinment of cost matrix
+   */
+  std::optional<std::vector<std::pair<int, int> > > getAssignment(
+    const Eigen::MatrixXd & cost_matrix) const;
   /**
-         * @brief get index with value zero
-         */
-  std::vector<std::pair<int, int> > getZeroIndex(Eigen::MatrixXd mat);
+   * @brief get index with value zero
+   */
+  std::vector<std::pair<int, int> > getZeroIndex(const Eigen::MatrixXd & mat) const;
   /**
-         * @brief get delete lines index
-         */
-  std::pair<std::vector<int>, std::vector<int> > getDeleteLinesIndex(Eigen::MatrixXd mat);
+   * @brief get delete lines index
+   */
+  std::pair<std::vector<int>, std::vector<int> > getDeleteLinesIndex(
+    const Eigen::MatrixXd & mat) const;
   // macros for Rostest
   friend class SolverTestSuite;
   /**
-         * @brief FRIENT TEST macro for getInitialCostMatrix
-         * @sa getInitialCostMatrix
-         */
+   * @brief FRIENT TEST macro for getInitialCostMatrix
+   * @sa getInitialCostMatrix
+   */
   FRIEND_TEST(SolverTestSuite, getInitialCostMatrixTestCase1);
   /**
-         * @brief FRIENT TEST macro for getInitialCostMatrix
-         * @sa getInitialCostMatrix
-         */
+   * @brief FRIENT TEST macro for getInitialCostMatrix
+   * @sa getInitialCostMatrix
+   */
   FRIEND_TEST(SolverTestSuite, getInitialCostMatrixTestCase2);
   /**
-         * @brief FRIENT TEST macro for getNonZeroColFlags
-         * @sa getNonZeroColFlags
-         */
+   * @brief FRIENT TEST macro for getNonZeroColFlags
+   * @sa getNonZeroColFlags
+   */
   FRIEND_TEST(SolverTestSuite, getNonZeroColFlagsTestCase1);
   /**
-         * @brief FRIENT TEST macro for getNonZeroColFlags
-         * @sa getNonZeroColFlags
-         */
+   * @brief FRIENT TEST macro for getNonZeroColFlags
+   * @sa getNonZeroColFlags
+   */
   FRIEND_TEST(SolverTestSuite, getNonZeroColFlagsTestCase2);
   /**
-         * @brief FRIENT TEST macro for getPaddCostMatrix
-         * @sa getPaddCostMatrix
-         */
+   * @brief FRIENT TEST macro for getPaddCostMatrix
+   * @sa getPaddCostMatrix
+   */
   FRIEND_TEST(SolverTestSuite, getPaddCostMatrixTestCase1);
   /**
-         * @brief FRIENT TEST macro for subtractRowMinima
-         * @sa subtractRowMinima
-         */
+   * @brief FRIENT TEST macro for subtractRowMinima
+   * @sa subtractRowMinima
+   */
   FRIEND_TEST(SolverTestSuite, subtractRowMinimaTestCase1);
   /**
-         * @brief FRIENT TEST macro for subtractColMinima
-         * @sa subtractColMinima
-         */
+   * @brief FRIENT TEST macro for subtractColMinima
+   * @sa subtractColMinima
+   */
   FRIEND_TEST(SolverTestSuite, subtractColMinimaTestCase1);
   /**
-         * @brief FRIENT TEST macro for getAssignment
-         * @sa getAssignment
-         */
+   * @brief FRIENT TEST macro for getAssignment
+   * @sa getAssignment
+   */
   FRIEND_TEST(SolverTestSuite, getAssignmentTestCase1);
   /**
-         * @brief FRIENT TEST macro for getAssignment
-         * @sa getAssignment
-         */
+   * @brief FRIENT TEST macro for getAssignment
+   * @sa getAssignment
+   */
   FRIEND_TEST(SolverTestSuite, getAssignmentTestCase2);
   /**
-         * @brief FRIENT TEST macro for getZeroIndex
-         * @sa getZeroIndex
-         */
+   * @brief FRIENT TEST macro for getZeroIndex
+   * @sa getZeroIndex
+   */
   FRIEND_TEST(SolverTestSuite, getZeroIndexTestCase1);
   /**
-         * @brief FRIENT TEST macro for getZeroIndex
-         * @sa getZeroIndex
-         */
+   * @brief FRIENT TEST macro for getZeroIndex
+   * @sa getZeroIndex
+   */
   FRIEND_TEST(SolverTestSuite, getZeroIndexTestCase2);
   /**
-         * @brief FRIENT TEST macro for getDeleteLinesIndex
-         * @sa getDeleteLinesIndex
-         */
+   * @brief FRIENT TEST macro for getDeleteLinesIndex
+   * @sa getDeleteLinesIndex
+   */
   FRIEND_TEST(SolverTestSuite, getDeleteLinesIndexTestCase1);
   /**
-         * @brief FRIENT TEST macro for updateCostMatrix
-         * @sa updateCostMatrix
-         */
+   * @brief FRIENT TEST macro for updateCostMatrix
+   * @sa updateCostMatrix
+   */
   FRIEND_TEST(SolverTestSuite, updateCostMatrixTestCase1);
 };
 }  // namespace hungarian_solver

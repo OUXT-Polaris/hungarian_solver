@@ -59,9 +59,9 @@ public:
   {
     return obj_.getPaddCostMatrix(cost_matrix, cost_of_non_assignment);
   }
-  Eigen::MatrixXd subtractRowMinima(Eigen::MatrixXd mat) { return obj_.subtractRowMinima(mat); }
-  Eigen::MatrixXd subtractColMinima(Eigen::MatrixXd mat) { return obj_.subtractColMinima(mat); }
-  boost::optional<std::vector<std::pair<int, int> > > getAssignment(Eigen::MatrixXd mat)
+  void subtractRowMinima(Eigen::MatrixXd & mat) { obj_.subtractRowMinima(mat); }
+  void subtractColMinima(Eigen::MatrixXd & mat) { obj_.subtractColMinima(mat); }
+  std::optional<std::vector<std::pair<int, int> > > getAssignment(Eigen::MatrixXd mat)
   {
     return obj_.getAssignment(mat);
   }
@@ -215,11 +215,11 @@ TEST(SolverTestSuite, subtractRowMinimaTestCase1)
   Eigen::MatrixXd cost_matrix(2, 2);
   cost_matrix << 0, 2, 1, 2;
   hungarian_solver::Solver solver;
-  Eigen::MatrixXd ret = solver.subtractRowMinima(cost_matrix);
-  EXPECT_FLOAT_EQ(ret(0, 0), 0);
-  EXPECT_FLOAT_EQ(ret(0, 1), 2);
-  EXPECT_FLOAT_EQ(ret(1, 0), 0);
-  EXPECT_FLOAT_EQ(ret(1, 1), 1);
+  solver.subtractRowMinima(cost_matrix);
+  EXPECT_FLOAT_EQ(cost_matrix(0, 0), 0);
+  EXPECT_FLOAT_EQ(cost_matrix(0, 1), 2);
+  EXPECT_FLOAT_EQ(cost_matrix(1, 0), 0);
+  EXPECT_FLOAT_EQ(cost_matrix(1, 1), 1);
 }
 
 TEST(SolverTestSuite, subtractColMinimaTestCase1)
@@ -227,13 +227,13 @@ TEST(SolverTestSuite, subtractColMinimaTestCase1)
   Eigen::MatrixXd cost_matrix(2, 3);
   cost_matrix << 0, 1, 2, 1, 2, 2;
   hungarian_solver::Solver solver;
-  Eigen::MatrixXd ret = solver.subtractColMinima(cost_matrix);
-  EXPECT_FLOAT_EQ(ret(0, 0), 0);
-  EXPECT_FLOAT_EQ(ret(0, 1), 0);
-  EXPECT_FLOAT_EQ(ret(0, 2), 0);
-  EXPECT_FLOAT_EQ(ret(1, 0), 1);
-  EXPECT_FLOAT_EQ(ret(1, 1), 1);
-  EXPECT_FLOAT_EQ(ret(1, 2), 0);
+  solver.subtractColMinima(cost_matrix);
+  EXPECT_FLOAT_EQ(cost_matrix(0, 0), 0);
+  EXPECT_FLOAT_EQ(cost_matrix(0, 1), 0);
+  EXPECT_FLOAT_EQ(cost_matrix(0, 2), 0);
+  EXPECT_FLOAT_EQ(cost_matrix(1, 0), 1);
+  EXPECT_FLOAT_EQ(cost_matrix(1, 1), 1);
+  EXPECT_FLOAT_EQ(cost_matrix(1, 2), 0);
 }
 
 TEST(SolverTestSuite, solveTestCase1)
@@ -249,16 +249,16 @@ TEST(SolverTestSuite, getAssignmentTestCase1)
   Eigen::MatrixXd mat(4, 4);
   mat << 0, 0, 5, 3, 2, 4, 2, 0, 3, 7, 0, 2, 0, 0, 0, 0;
   hungarian_solver::Solver solver;
-  boost::optional<std::vector<std::pair<int, int> > > ret = solver.getAssignment(mat);
+  std::optional<std::vector<std::pair<int, int> > > ret = solver.getAssignment(mat);
   EXPECT_EQ(ret->size(), static_cast<size_t>(4));
-  EXPECT_EQ(ret.get()[0].first, 0);
-  EXPECT_EQ(ret.get()[0].second, 0);
-  EXPECT_EQ(ret.get()[1].first, 1);
-  EXPECT_EQ(ret.get()[1].second, 3);
-  EXPECT_EQ(ret.get()[2].first, 2);
-  EXPECT_EQ(ret.get()[2].second, 2);
-  EXPECT_EQ(ret.get()[3].first, 3);
-  EXPECT_EQ(ret.get()[3].second, 1);
+  EXPECT_EQ(ret.value()[0].first, 0);
+  EXPECT_EQ(ret.value()[0].second, 0);
+  EXPECT_EQ(ret.value()[1].first, 1);
+  EXPECT_EQ(ret.value()[1].second, 3);
+  EXPECT_EQ(ret.value()[2].first, 2);
+  EXPECT_EQ(ret.value()[2].second, 2);
+  EXPECT_EQ(ret.value()[3].first, 3);
+  EXPECT_EQ(ret.value()[3].second, 1);
 }
 
 TEST(SolverTestSuite, getAssignmentTestCase2)
@@ -266,8 +266,8 @@ TEST(SolverTestSuite, getAssignmentTestCase2)
   Eigen::MatrixXd mat(4, 4);
   mat << 0, 0, 3, 2, 3, 5, 1, 0, 5, 9, 0, 3, 2, 2, 0, 1;
   hungarian_solver::Solver solver;
-  boost::optional<std::vector<std::pair<int, int> > > ret = solver.getAssignment(mat);
-  EXPECT_EQ(ret, boost::none);
+  std::optional<std::vector<std::pair<int, int> > > ret = solver.getAssignment(mat);
+  EXPECT_EQ(ret, std::nullopt);
 }
 
 TEST(SolverTestSuite, getZeroIndexTestCase1)
@@ -343,16 +343,16 @@ TEST(SolverTestSuite, solveCase1)
   Eigen::MatrixXd mat(4, 4);
   mat << 0, 0, 4, 2, 3, 5, 2, 0, 4, 8, 0, 2, 1, 1, 0, 0;
   hungarian_solver::Solver solver;
-  boost::optional<std::vector<std::pair<int, int> > > ret = solver.solve(mat);
+  std::optional<std::vector<std::pair<int, int> > > ret = solver.solve(mat);
   EXPECT_EQ(ret->size(), static_cast<size_t>(4));
-  EXPECT_EQ(ret.get()[0].first, 0);
-  EXPECT_EQ(ret.get()[0].second, 0);
-  EXPECT_EQ(ret.get()[1].first, 1);
-  EXPECT_EQ(ret.get()[1].second, 3);
-  EXPECT_EQ(ret.get()[2].first, 2);
-  EXPECT_EQ(ret.get()[2].second, 2);
-  EXPECT_EQ(ret.get()[3].first, 3);
-  EXPECT_EQ(ret.get()[3].second, 1);
+  EXPECT_EQ(ret.value()[0].first, 0);
+  EXPECT_EQ(ret.value()[0].second, 0);
+  EXPECT_EQ(ret.value()[1].first, 1);
+  EXPECT_EQ(ret.value()[1].second, 3);
+  EXPECT_EQ(ret.value()[2].first, 2);
+  EXPECT_EQ(ret.value()[2].second, 2);
+  EXPECT_EQ(ret.value()[3].first, 3);
+  EXPECT_EQ(ret.value()[3].second, 1);
 }
 
 TEST(SolverTestSuite, solveCase2)
@@ -360,14 +360,14 @@ TEST(SolverTestSuite, solveCase2)
   Eigen::MatrixXd mat(3, 3);
   mat << 0, 0, 0, 1, 2, 3, 2, 3, 0;
   hungarian_solver::Solver solver;
-  boost::optional<std::vector<std::pair<int, int> > > ret = solver.solve(mat, 3);
+  std::optional<std::vector<std::pair<int, int> > > ret = solver.solve(mat, 3);
   EXPECT_EQ(ret->size(), static_cast<size_t>(3));
-  EXPECT_EQ(ret.get()[0].first, 0);
-  EXPECT_EQ(ret.get()[0].second, 1);
-  EXPECT_EQ(ret.get()[1].first, 1);
-  EXPECT_EQ(ret.get()[1].second, 0);
-  EXPECT_EQ(ret.get()[2].first, 2);
-  EXPECT_EQ(ret.get()[2].second, 2);
+  EXPECT_EQ(ret.value()[0].first, 0);
+  EXPECT_EQ(ret.value()[0].second, 1);
+  EXPECT_EQ(ret.value()[1].first, 1);
+  EXPECT_EQ(ret.value()[1].second, 0);
+  EXPECT_EQ(ret.value()[2].first, 2);
+  EXPECT_EQ(ret.value()[2].second, 2);
 }
 
 TEST(SolverTestSuite, solveCase3)
@@ -375,12 +375,12 @@ TEST(SolverTestSuite, solveCase3)
   Eigen::MatrixXd mat(2, 3);
   mat << 0, 0, 0, 1, 2, 3;
   hungarian_solver::Solver solver;
-  boost::optional<std::vector<std::pair<int, int> > > ret = solver.solve(mat, 3);
+  std::optional<std::vector<std::pair<int, int> > > ret = solver.solve(mat, 3);
   EXPECT_EQ(ret->size(), static_cast<size_t>(2));
-  EXPECT_EQ(ret.get()[0].first, 0);
-  EXPECT_EQ(ret.get()[0].second, 1);
-  EXPECT_EQ(ret.get()[1].first, 1);
-  EXPECT_EQ(ret.get()[1].second, 0);
+  EXPECT_EQ(ret.value()[0].first, 0);
+  EXPECT_EQ(ret.value()[0].second, 1);
+  EXPECT_EQ(ret.value()[1].first, 1);
+  EXPECT_EQ(ret.value()[1].second, 0);
 }
 }  // namespace hungarian_solver
 
